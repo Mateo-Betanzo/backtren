@@ -1,0 +1,29 @@
+@urlBase   = http://localhost:3000
+@urlHealth = {{urlBase}}/health
+@urlUser   = {{urlBase}}/users
+
+// roles: alumno/profesor
+
+###
+# Health check
+GET {{urlHealth}}
+
+###
+# Obtener todos los usuarios
+GET {{urlUser}}
+
+###
+# Obtener un usuario por id
+GET {{urlUser}}/1
+
+###
+# Crear un nuevo usuario
+POST {{urlUser}}
+Content-Type: application/json
+
+{
+    "name": "juan123",
+    "email": "juan@email.com",
+    "password": "miPassword123",
+    "role": "alumno"
+}
