@@ -1,8 +1,7 @@
 @urlBase   = http://localhost:3000
 @urlHealth = {{urlBase}}/health
 @urlUser   = {{urlBase}}/users
-
-// roles: alumno/profesor
+@idUsuario = 424f9501-9020-4a46-846c-d999ad49342b
 
 ###
 # Health check
@@ -13,11 +12,7 @@ GET {{urlHealth}}
 GET {{urlUser}}
 
 ###
-# Obtener un usuario por id
-GET {{urlUser}}/1
-
-###
-# Crear un nuevo usuario
+# Crear un nuevo usuario (copiá el "id" de la respuesta y pegalo en @idUsuario)
 POST {{urlUser}}
 Content-Type: application/json
 
@@ -27,3 +22,23 @@ Content-Type: application/json
     "password": "miPassword123",
     "role": "alumno"
 }
+
+###
+# Obtener un usuario por id
+GET {{urlUser}}/{{idUsuario}}
+
+###
+# Modificar un usuario (todos los campos)
+PUT {{urlUser}}/{{idUsuario}}
+Content-Type: application/json
+
+{
+    "name": "juan1234",
+    "email": "juan.nuevo@email.com",
+    "password": "miNuevoPassword123",
+    "role": "profesor"
+}
+
+###
+# Eliminar un usuario
+DELETE {{urlUser}}/{{idUsuario}}
