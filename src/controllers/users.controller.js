@@ -6,6 +6,14 @@ import {
   deleteUserService,
 } from "../services/users.service.js";
 
+export const getPerfil = async (req, res) => {
+  // req.usuario viene del middleware verificarToken: { id, rol, iat, exp }
+  return res.status(200).json({
+    message: "Perfil obtenido correctamente",
+    data: req.usuario,
+  });
+};
+
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;

@@ -1,8 +1,172 @@
 @urlBase   = http://localhost:3000
 @urlHealth = {{urlBase}}/health
 @urlUser   = {{urlBase}}/users
+@urlAuth   = {{urlBase}}/auth
+@urlMaterias = {{urlBase}}/materias
 @idUsuario = 424f9501-9020-4a46-846c-d999ad49342b
+@token = token
+@tokenProfesor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExODg2MWIwLWUyZGQtNDkyYi05OTQ3LTQzNGFlYWYyOWFjZiIsInJvbCI6InByb2Zlc29yIiwiaWF0IjoxNzg2NzE3OTk3LCJleHAiOjE3ODY3MjE1OTd9.L9W2iP5UK3jdAxLuyj-22o71uLJMXwmC21oLwtMQcVI
+@tokenAlumno = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYjI2YjM2LTk2YWMtNDc0OC1iOThhLTEzNWNlZjYyN2IwMSIsInJvbCI6ImFsdW1ubyIsImlhdCI6MTc4NjcxODIxNiwiZXhwIjoxNzg2NzIxODE2fQ.vVLKaqZVixPArkt-v_4K_00wPOgEtQB3kDi8l9INAjM
 
+
+###
+# Login (copiá el "token" de la respuesta y pegalo en @token)
+POST {{urlAuth}}/login
+Content-Type: application/json
+
+{
+    "email": "test@email.com",
+    "password": "test1234"
+}
+
+###
+# GET protegida — perfil del usuario logueado
+GET {{urlUser}}/perfil
+Authorization: Bearer {{tokenProfesor}}
+
+
+#--------------------------------------------------------------------------------------
+###
+# Crear usuario profesor
+POST {{urlUser}}
+Content-Type: application/json
+
+{
+    "name": "profe",
+    "email": "profe@email.com",
+    "password": "profe1234",
+    "role": "profesor"
+}
+
+###
+# Crear usuario alumno
+POST {{urlUser}}
+Content-Type: application/json
+
+{
+    "name": "alumno",
+    "email": "alumno@email.com",
+    "password": "alumno1234",
+    "role": "alumno"
+}
+
+
+#--------------------------------------------------------------------------------------
+###
+# Login profesor
+POST {{urlAuth}}/login
+Content-Type: application/json
+
+{
+    "email": "profe@email.com",
+    "password": "profe1234"
+}
+
+###
+# Login alumno
+POST {{urlAuth}}/login
+Content-Type: application/json
+
+{
+    "email": "alumno@email.com",
+    "password": "alumno1234"
+}
+
+
+#--------------------------------------------------------------------------------------
+###
+# Alumno ve materias
+GET {{urlMaterias}}
+Authorization: Bearer {{tokenAlumno}}
+
+###
+# Profesor ve materias
+GET {{urlMaterias}}
+Authorization: Bearer {{tokenProfesor}}
+
+
+#--------------------------------------------------------------------------------------
+###
+# Profesor crea materia (debería funcionar - 201)
+POST {{urlMaterias}}
+Content-Type: application/json
+Authorization: Bearer {{tokenProfesor}}
+
+{
+    "nombre": "Matemática"
+}
+
+###
+# Alumno intenta crear materia (debería fallar - 403)
+POST {{urlMaterias}}
+Content-Type: application/json
+Authorization: Bearer {{tokenAlumno}}
+
+{
+    "nombre": "Historia"
+}
+
+#--------------------------------------------------------------------------------------
+#rate limit (despues del 6to request en 1 minuto, deberia dar 429)
+###
+POST {{urlAuth}}/login
+Content-Type: application/json
+
+{
+    "email": "profe@email.com",
+    "password": "incorrecta"
+}
+
+
+
+
+
+
+#--------------------------------------------------------------------------------------
+###
+# Profesor crea materia (debería funcionar si el token es de un profesor)
+POST {{urlBase}}/materias
+Content-Type: application/json
+Authorization: Bearer {{tokenProfesor}}
+
+{
+    "nombre": "Matemática"
+}
+
+###
+# Alumno intenta crear materia (debería dar 403)
+POST {{urlBase}}/materias
+Content-Type: application/json
+Authorization: Bearer {{tokenAlumno}}
+
+{
+    "nombre": "Matemática"
+}
+
+###
+# Cualquiera con token puede ver materias
+GET {{urlBase}}/materias
+Authorization: Bearer {{token}}
+
+
+#--------------------------------------------------------------------------------------
+###
+# Ver materias (alumno o profesor, con token)
+GET {{urlMaterias}}
+Authorization: Bearer {{token}}
+
+###
+# Crear materia (solo profesor)
+POST {{urlMaterias}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Matemática"
+}
+
+
+#--------------------------------------------------------------------------------------
 ###
 # Health check
 GET {{urlHealth}}
@@ -12,14 +176,15 @@ GET {{urlHealth}}
 GET {{urlUser}}
 
 ###
-# Crear un nuevo usuario (copiá el "id" de la respuesta y pegalo en @idUsuario)
+# Crear un nuevo usuario (ahora requiere token)
 POST {{urlUser}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-    "name": "juan123",
-    "email": "juan@email.com",
-    "password": "miPassword123",
+    "name": "admin",
+    "email": "admin@email.com",
+    "password": "admin123",
     "role": "alumno"
 }
 
@@ -40,5 +205,28 @@ Content-Type: application/json
 }
 
 ###
+POST {{urlUser}}
+Content-Type: application/json
+
+{
+    "name": "test",
+    "email": "test@email.com",
+    "password": "test1234",
+    "role": "profesor"
+}
+
+###
+
+#"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjljNWFhYzk0LTBhN2QtNGMyNi04ZTZkLTA2Njk4OGJjNDkwYSIsInJvbCI6InByb2Zlc29yIiwiaWF0IjoxNzg2NjY4NDg3LCJleHAiOjE3ODY2NzIwODd9.1cUoSC9xbndGGpkThhDdag5EBa8hNLZFOd-pyqQ7Fvg"
+POST {{urlAuth}}/login
+Content-Type: application/json
+
+{
+    "email": "test@email.com",
+    "password": "test1234"
+}
+
+###
 # Eliminar un usuario
 DELETE {{urlUser}}/{{idUsuario}}
+
