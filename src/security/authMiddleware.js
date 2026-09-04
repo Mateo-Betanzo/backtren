@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.JWT_SECRET || "contraseña-secreta";
 
 export function verificarToken(req, res, next) {
   const authHeader = req.headers['authorization'];

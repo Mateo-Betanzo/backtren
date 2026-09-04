@@ -15,7 +15,7 @@ router.get("/", getAllUsers);
 router.get("/perfil", verificarToken, getPerfil); // ← GET protegida
 router.get("/:id", getUser);
 
-router.post("/", verificarToken, createUser); // protegida de nuevo
+router.post("/", createUser); // protegida de nuevo
 
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);

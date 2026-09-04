@@ -16,13 +16,13 @@ export const getPerfil = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, rol } = req.body;
 
     const user = await createUserService({
       name,
       email,
       password,
-      role,
+      role: role || rol || "alumno",
     });
 
     return res.status(201).json({
