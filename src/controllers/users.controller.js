@@ -7,11 +7,17 @@ import {
 } from "../services/users.service.js";
 
 export const getPerfil = async (req, res) => {
-  // req.usuario viene del middleware verificarToken: { id, rol, iat, exp }
-  return res.status(200).json({
-    message: "Perfil obtenido correctamente",
-    data: req.usuario,
-  });
+  try {
+    const user = await getUserByIdService(req.usuario.id);
+    return res.status(200).json({
+      message: "Perfil obtenido correctamente",
+      data: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+    });
+  }
 };
 
 export const createUser = async (req, res) => {
